@@ -1,9 +1,10 @@
 {
     "name": "terminal-command-keys",
     "displayName": "terminal-command-keys",
-    "description": "Let's you run stuff",
+    "description": "Assign a terminal command to a keybinding",
     "version": "0.0.1",
     "publisher": "petekinnecom",
+    "repository": "petekinnecom/terminal-command-keys",
     "engines": {
         "vscode": "^1.23.0"
     },
@@ -11,14 +12,14 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:terminalCommandKeys.run"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "terminalCommandKeys.run",
+                "title": "Run Terminal Command"
             }
         ]
     },
