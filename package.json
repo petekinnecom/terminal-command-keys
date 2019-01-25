@@ -2,7 +2,7 @@
     "name": "terminal-command-keys",
     "displayName": "terminal-command-keys",
     "description": "Assign a terminal command to a keybinding",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "petekinnecom",
     "repository": "petekinnecom/terminal-command-keys",
     "engines": {
