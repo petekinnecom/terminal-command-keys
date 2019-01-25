@@ -80,3 +80,4 @@ The differences (at this time):
 - Option to save all files before execution
 - Option to reveal the terminal before execution
 - Option to use a new terminal for each execution
+- Scrolls to bottom of terminal when running a command

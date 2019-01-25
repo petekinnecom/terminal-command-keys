@@ -62,6 +62,7 @@ function run(command, showTerminal, newTerminal) {
     if (showTerminal) {
         terminal.show(true);
     }
+    vscode.commands.executeCommand('workbench.action.terminal.scrollToBottom')
     terminal.sendText(command, true)
 }
 
