@@ -46,14 +46,20 @@ function getTerminal(newTerminal) {
 // END TERMINAL
 
 function resolve(editor, command) {
-    var relativeFile = "." + editor.document.fileName.replace(vscode.workspace.rootPath, "");
+    // Create a workspace variable for the first workspace folder opened. 
+    // May be undefined if no workspace is opened.
+    var workspace = undefined;
+    if (vscode.workspace.workspaceFolders.length > 0) {
+        workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    }
+    var relativeFile = "." + editor.document.fileName.replace(workspace, "");
     var line = editor.selection.active.line + 1;
 
     return command
         .replace(/\${line}/g, `${line}`)
         .replace(/\${relativeFile}/g, relativeFile)
         .replace(/\${file}/g, `${editor.document.fileName}`)
-        .replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
+        .replace(/\${workspaceRoot}/g, `${workspace}`);
 }
 
 function run(command, showTerminal, newTerminal, focus) {
