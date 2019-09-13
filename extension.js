@@ -56,13 +56,17 @@ function resolve(editor, command) {
         .replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
 }
 
-function run(command, showTerminal, newTerminal) {
+function run(command, showTerminal, newTerminal, focus) {
     const terminal = getTerminal(newTerminal);
 
     if (showTerminal) {
         terminal.show(true);
     }
     vscode.commands.executeCommand('workbench.action.terminal.scrollToBottom')
+    // Focus on the terminal if focus is set to true.
+    if (focus){
+        vscode.commands.executeCommand('workbench.action.terminal.focus')
+    }
     terminal.sendText(command, true)
 }
 
@@ -88,7 +92,8 @@ function handleInput(editor, args) {
         run(
             cmd,
             args.showTerminal,
-            args.newTerminal
+            args.newTerminal,
+            args.focus
         );
     });
 }
@@ -109,9 +114,14 @@ function activate(context) {
         const defaults = {
             showTerminal: true,
             saveAllFiles: true,
-            newTerminal: false
+            newTerminal: false,
+            focus: false,
         }
         const realArgs = Object.assign(defaults, args)
+        // If showTerminal is false, then focus should always be false, as we do not wish to focus on a terminal that should not be shown.
+        if (!realArgs.showTerminal){
+            realArgs.focus = false;
+        }
 
         handleInput(editor, realArgs)
     });
