@@ -49,7 +49,7 @@ function resolve(editor, command) {
     // Create a workspace variable for the first workspace folder opened. 
     // May be undefined if no workspace is opened.
     var workspace = undefined;
-    if (vscode.workspace.workspaceFolders.length > 0) {
+    if (vscode.workspace.workspaceFolders) {
         workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
     }
     var relativeFile = "." + editor.document.fileName.replace(workspace, "");
@@ -73,11 +73,13 @@ function run(command, showTerminal, newTerminal, focus) {
     if (focus){
         vscode.commands.executeCommand('workbench.action.terminal.focus')
     }
-    terminal.sendText(command, true)
+    terminal.sendText(command, true);
 }
 
 function warn(msg) {
-    console.log('terminalCommandKeys.run: ', msg)
+    var log = 'terminalCommandKeys.run: ' + msg;
+    console.log(log);
+    vscode.window.showWarningMessage(log);
 }
 
 function maybeSave(shouldSave) {
@@ -108,12 +110,12 @@ function activate(context) {
     let disposable = vscode.commands.registerCommand('terminalCommandKeys.run', (args) => {
         const editor = vscode.window.activeTextEditor
         if (!editor) {
-            warn('no active editor');
+            warn('There must be an active editor.');
             return;
         }
 
         if (!args || !args.cmd) {
-            warn('keybinding must include a "args.cmd" key');
+            warn('Keybinding must include a "args.cmd" key');
             return;
         }
 
