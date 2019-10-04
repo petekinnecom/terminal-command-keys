@@ -46,23 +46,33 @@ function getTerminal(newTerminal) {
 // END TERMINAL
 
 function resolve(editor, command) {
-    var relativeFile = "." + editor.document.fileName.replace(vscode.workspace.rootPath, "");
+    // Create a workspace variable for the first workspace folder opened. 
+    // May be undefined if no workspace is opened.
+    var workspace = undefined;
+    if (vscode.workspace.workspaceFolders.length > 0) {
+        workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    }
+    var relativeFile = "." + editor.document.fileName.replace(workspace, "");
     var line = editor.selection.active.line + 1;
 
     return command
         .replace(/\${line}/g, `${line}`)
         .replace(/\${relativeFile}/g, relativeFile)
         .replace(/\${file}/g, `${editor.document.fileName}`)
-        .replace(/\${workspaceRoot}/g, `${vscode.workspace.rootPath}`);
+        .replace(/\${workspaceRoot}/g, `${workspace}`);
 }
 
-function run(command, showTerminal, newTerminal) {
+function run(command, showTerminal, newTerminal, focus) {
     const terminal = getTerminal(newTerminal);
 
     if (showTerminal) {
         terminal.show(true);
     }
     vscode.commands.executeCommand('workbench.action.terminal.scrollToBottom')
+    // Focus on the terminal if focus is set to true.
+    if (focus){
+        vscode.commands.executeCommand('workbench.action.terminal.focus')
+    }
     terminal.sendText(command, true)
 }
 
@@ -88,7 +98,8 @@ function handleInput(editor, args) {
         run(
             cmd,
             args.showTerminal,
-            args.newTerminal
+            args.newTerminal,
+            args.focus
         );
     });
 }
@@ -109,9 +120,14 @@ function activate(context) {
         const defaults = {
             showTerminal: true,
             saveAllFiles: true,
-            newTerminal: false
+            newTerminal: false,
+            focus: false,
         }
         const realArgs = Object.assign(defaults, args)
+        // If showTerminal is false, then focus should always be false, as we do not wish to focus on a terminal that should not be shown.
+        if (!realArgs.showTerminal){
+            realArgs.focus = false;
+        }
 
         handleInput(editor, realArgs)
     });

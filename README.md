@@ -19,7 +19,8 @@ Open your keybindings.json (Command Palette => 'Preferences: Open Keyboard Short
           "cmd": "echo 'hello from file: ${file}'",
           "newTerminal": false,
           "saveAllFiles": true,
-          "showTerminal": true
+          "showTerminal": true,
+          "focus": true
       }
   }
 ```
@@ -66,6 +67,13 @@ If false, does not save all files before running the command.
 If true, ensures that the terminal is showing when running the command.
 
 If false, does not change the visibility of the terminal when running the command.
+
+---
+### "focus" : options, default false, locked to false if "showTerminal" is false
+
+If true, ensures that the terminal is focused when running the command.
+
+If false, focus is not applied to the terminal when running the command.
 
 ---
 
