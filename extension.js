@@ -39,6 +39,7 @@ function getTerminal(newTerminal, terminalName) {
     let terminal = _terminals[terminalName];
     if (newTerminal && terminal) {
         disposeTerminal(terminalName);
+        terminal = undefined;
     }
 
     if (!terminal) {
