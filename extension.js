@@ -3,45 +3,49 @@ const path = require('path')
 
 // BEGIN TERMINAL
 //
-// _activeTerminal is a reference our terminal. However, sometimes we
+// _terminals is a mapper of our terminal. However, sometimes we
 // dispose the terminal and sometimes the user does. The 'onDidCloseTerminal'
 // callback is called in both cases. This opens us to a timing issue, because we
 // could do:
 //
-//   _activeTerminal.dispose();  // _activeTerminal.id = 1
-//   _activeTerminal = createTerminal();  // _activeTerminal.id = 2
-//   onDidCloseTerminal runs and nulls out _activeTerminal with id 2  which is
+//   _terminals[name].dispose();  // _terminals[name].id = 1
+//   _terminals[name] = createTerminal();  // _terminals[name].id = 2
+//   onDidCloseTerminal runs and nulls out _terminals[name] with id 2  which is
 //     the new terminal we just created.
 //
 // To avoid this issue, we track 'tckDispose' so that we know whether the
 // event was triggered by the user or the extension.
-let _activeTerminal = null;
+let _terminals = {};
 vscode.window.onDidCloseTerminal((terminal) => {
-    if (terminal.name === 'terminal-command-keys') {
+    if (_terminals[terminal.name]) {
         if (!terminal.tckDisposed) {
-            disposeTerminal();
+            disposeTerminal(terminal.name);
         }
     }
 });
-function createTerminal() {
-    _activeTerminal = vscode.window.createTerminal('terminal-command-keys');
-    return _activeTerminal;
+function createTerminal(terminalName) {
+    _terminals[terminalName] = vscode.window.createTerminal(terminalName);
+    return _terminals[terminalName];
 }
-function disposeTerminal() {
-    _activeTerminal.tckDisposed = true;
-    _activeTerminal.dispose();
-    _activeTerminal = null;
+function disposeTerminal(terminalName) {
+    if (!_terminals[terminalName]) {
+        return;
+    }
+    _terminals[terminalName].tckDisposed = true;
+    _terminals[terminalName].dispose();
+    delete _terminals[terminalName];
 }
-function getTerminal(newTerminal) {
-    if (newTerminal && _activeTerminal) {
-        disposeTerminal();
+function getTerminal(newTerminal, terminalName) {
+    let terminal = _terminals[terminalName];
+    if (newTerminal && terminal) {
+        disposeTerminal(terminalName);
     }
 
-    if (!_activeTerminal) {
-        createTerminal();
+    if (!terminal) {
+        terminal = createTerminal(terminalName);
     }
 
-    return _activeTerminal;
+    return terminal;
 }
 // END TERMINAL
 
@@ -62,8 +66,8 @@ function resolve(editor, command) {
         .replace(/\${workspaceRoot}/g, `${workspace}`);
 }
 
-function run(command, showTerminal, newTerminal, focus) {
-    const terminal = getTerminal(newTerminal);
+function run(command, showTerminal, newTerminal, focus, terminalName) {
+    const terminal = getTerminal(newTerminal, terminalName);
 
     if (showTerminal) {
         terminal.show(true);
@@ -101,7 +105,8 @@ function handleInput(editor, args) {
             cmd,
             args.showTerminal,
             args.newTerminal,
-            args.focus
+            args.focus,
+            args.terminalName
         );
     });
 }
@@ -124,6 +129,7 @@ function activate(context) {
             saveAllFiles: true,
             newTerminal: false,
             focus: false,
+            terminalName: 'terminal-command-keys',
         }
         const realArgs = Object.assign(defaults, args)
         // If showTerminal is false, then focus should always be false, as we do not wish to focus on a terminal that should not be shown.
