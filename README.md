@@ -20,7 +20,8 @@ Open your keybindings.json (Command Palette => 'Preferences: Open Keyboard Short
           "newTerminal": false,
           "saveAllFiles": true,
           "showTerminal": true,
-          "focus": true
+          "focus": true,
+          "terminalName": "some terminal name"
       }
   }
 ```
@@ -69,11 +70,18 @@ If true, ensures that the terminal is showing when running the command.
 If false, does not change the visibility of the terminal when running the command.
 
 ---
+
 ### "focus" : options, default false, locked to false if "showTerminal" is false
 
 If true, ensures that the terminal is focused when running the command.
 
 If false, focus is not applied to the terminal when running the command.
+
+---
+
+### "terminalName" : options, default "terminal-command-keys"
+
+It use for create and reuse terminal.
 
 ---
 
@@ -88,4 +96,5 @@ The differences (at this time):
 - Option to save all files before execution
 - Option to reveal the terminal before execution
 - Option to use a new terminal for each execution
+- Option to custom terminal name
 - Scrolls to bottom of terminal when running a command
