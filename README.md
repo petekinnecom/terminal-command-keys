@@ -81,7 +81,7 @@ If false, focus is not applied to the terminal when running the command.
 
 ### "terminalName" : options, default "terminal-command-keys"
 
-It use for create and reuse terminal.
+Allows you to set a custom name for the terminal associated with this command, allowing you to associate different commands with different terminals. Thanks to @qzsiniong.
 
 ---
 
